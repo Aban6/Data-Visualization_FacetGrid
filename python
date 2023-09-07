@@ -1,39 +1,51 @@
-import matplotlib.pyplot as plt
 import pandas as pd
+df = pd.read_csv("ImageWrappingData.csv")
+
+import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+font_size = 18
 class cMyPlot:
     Cnt = 0 
     
+   
+    
 def facetgrid_two_axes(data: pd.DataFrame, x_name: str, y1_name: str, y2_name: str,y3_name: str, ylabel1: str, ylabel2: str, color: str, myplot ):
+    
     ax1 = plt.gca()
-    #sns.lineplot(data[x_name], data[y1_name], ax=ax1)
     ax1.plot(data[x_name], data[y1_name], color = 'b')
     ax1.plot(data[x_name], data[y2_name], color = 'r')
-    ax1.set_ylabel(ylabel1)
+    ax1.set_ylabel(ylabel1,fontsize=font_size)
+    
+    #sns.set_theme(style='ticks')
+    
     ax2 = ax1.twinx()
     ax2.plot(data[x_name], data[y3_name], color = 'g',linestyle = 'dashed',label='A3')
     
+        
     MyPlot.Cnt += 1
-    if MyPlot.Cnt == 4:
+    if MyPlot.Cnt ==4:
         MyPlot.Cnt = 0
-        ax2.set_ylabel(ylabel2)
+        ax2.set_ylabel(ylabel2,fontsize=font_size)
         
 MyPlot=cMyPlot()
 
 
 df_ads_long_st = pd.read_csv("ImageWrappingData.csv")
   
-g = sns.FacetGrid(df_ads_long_st, col="*", col_wrap=4, margin_titles=True)
+g = sns.FacetGrid(df_ads_long_st, col="*", col_wrap=4, margin_titles=True, height=4, aspect=1.5)
 g.map_dataframe(facetgrid_two_axes, x_name="Hour", y1_name="AVG_base$netload_baseline", y2_name="AVG_netload_proposed",y3_name="AVG_ACC_rate", 
                     ylabel1='Net load (kW)', ylabel2='ACC rate ($/kWh)', myplot=MyPlot)
-
+plt.rcParams.update({'font.size': font_size})
 g.set_titles(col_template = '{col_name}')
-
-g.set_xlabels('Hour')
+g.set_xlabels('Hour',fontsize=font_size)
 g.add_legend()
+#plt.locator_params(axis='y', nbins=4)
 
 fig = plt.gcf()
-fig.set_size_inches(20,13)
+
+#fig.tight_layout()
+fig.set_size_inches(30,16)
 plt.show()
 g.savefig('Wrap_netLoadACC')
