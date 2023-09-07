@@ -1,0 +1,39 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+class cMyPlot:
+    Cnt = 0 
+    
+def facetgrid_two_axes(data: pd.DataFrame, x_name: str, y1_name: str, y2_name: str,y3_name: str, ylabel1: str, ylabel2: str, color: str, myplot ):
+    ax1 = plt.gca()
+    #sns.lineplot(data[x_name], data[y1_name], ax=ax1)
+    ax1.plot(data[x_name], data[y1_name], color = 'b')
+    ax1.plot(data[x_name], data[y2_name], color = 'r')
+    ax1.set_ylabel(ylabel1)
+    ax2 = ax1.twinx()
+    ax2.plot(data[x_name], data[y3_name], color = 'g',linestyle = 'dashed',label='A3')
+    
+    MyPlot.Cnt += 1
+    if MyPlot.Cnt == 4:
+        MyPlot.Cnt = 0
+        ax2.set_ylabel(ylabel2)
+        
+MyPlot=cMyPlot()
+
+
+df_ads_long_st = pd.read_csv("ImageWrappingData.csv")
+  
+g = sns.FacetGrid(df_ads_long_st, col="*", col_wrap=4, margin_titles=True)
+g.map_dataframe(facetgrid_two_axes, x_name="Hour", y1_name="AVG_base$netload_baseline", y2_name="AVG_netload_proposed",y3_name="AVG_ACC_rate", 
+                    ylabel1='Net load (kW)', ylabel2='ACC rate ($/kWh)', myplot=MyPlot)
+
+g.set_titles(col_template = '{col_name}')
+
+g.set_xlabels('Hour')
+g.add_legend()
+
+fig = plt.gcf()
+fig.set_size_inches(20,13)
+plt.show()
+g.savefig('Wrap_netLoadACC')
